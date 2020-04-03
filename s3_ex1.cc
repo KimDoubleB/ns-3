@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     bool verbose = true;
 
     // command line arguement for variable "verbose"
-    commandLine cmd;
+    CommandLine cmd;
     cmd.AddValue("verbose", "Tell echo applications to log if true", verbose);
     cmd.Parse(argc, argv);
 
@@ -45,8 +45,7 @@ int main(int argc, char *argv[])
 
     // Allocate IP address
     Ipv4AddressHelper address;
-    address.SetBase("10.1.1.0"
-                    "255.255.255.0");
+    address.SetBase("10.1.1.0","255.255.255.0");
     Ipv4InterfaceContainer p2pInterfaces;
     p2pInterfaces = address.Assign(p2pDevices); // NetDeviceContainer
 
@@ -59,7 +58,7 @@ int main(int argc, char *argv[])
     serverApps.Stop(Seconds(10.0));
 
     // Setup echoClient
-    UdpEchoClientHelper echoClient(p2pinterfaces.GetAddress(1), 9);
+    UdpEchoClientHelper echoClient(p2pInterfaces.GetAddress(1), 9);
     echoClient.SetAttribute("MaxPackets", UintegerValue(100));
     echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0)));
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
