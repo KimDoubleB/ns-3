@@ -7,11 +7,22 @@
 
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE("OnOffApplicationExample");
+
 int main(int argc, char *argv[])
 {
+    bool verbose = true;
+
     // Command Line input
     CommandLine cmd;
+    cmd.AddValue("verbose", "Tell applications to log if true", verbose);
     cmd.Parse(argc, argv);
+
+    if(verbose)
+    {
+	LogComponentEnable("OnOffApplication", LOG_LEVEL_INFO);
+	LogComponentEnable("PacketSink", LOG_LEVEL_INFO);
+    }
 
     // Create a node container and 2 nodes for p2p link
     NodeContainer terminals;
@@ -20,7 +31,7 @@ int main(int argc, char *argv[])
     // Create a netdevice container and p2p link
     PointToPointHelper pointToPoint;
     pointToPoint.SetDeviceAttribute("DataRate", StringValue("5Mbps"));
-    pointToPoint.SetDeviceAttribute("Delay", StringValue("2ms"));
+    pointToPoint.SetChannelAttribute("Delay", StringValue("2ms"));
     NetDeviceContainer p2pDevices;
     p2pDevices = pointToPoint.Install(terminals);
 
@@ -35,7 +46,7 @@ int main(int argc, char *argv[])
     ipv4.Assign(p2pDevices);
 
     // Setup OnOff application
-    unit16_t port = 9;
+    uint16_t port = 9;
     OnOffHelper onoff("ns3::UdpSocketFactory", Address(InetSocketAddress(Ipv4Address("10.1.1.2"), port)));
     onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1.0]"));
     onoff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=1.0]"));
@@ -54,5 +65,5 @@ int main(int argc, char *argv[])
     // Running simulator
     Simulator::Stop(Seconds(15));
     Simulator::Run();
-    Simulator::Destory();
+    Simulator::Destroy();
 }
