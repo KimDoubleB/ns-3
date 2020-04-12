@@ -4,7 +4,6 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
-#include "myapp.h"
 
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("s4_ex2");
@@ -121,7 +120,7 @@ CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
 static void
 RxDrop(Ptr<const Packet> p)
 {
-	NS_LOG_UNCOND("RxDrop at" << Simulator::Now().GetSeconds());
+	NS_LOG_UNCOND("RxDrop at " << Simulator::Now().GetSeconds());
 }
 
 int
@@ -157,9 +156,6 @@ main(int argc, char *argv[]) {
 	sinkApp.Start(Seconds(0.));
 	sinkApp.Stop(Seconds(20.));
 
-	// Connect RxDrop trace source and sink
-	devices.Get(1)->TraceConnectWithoutContext("phyRxDrop", MakeCallback(&RxDrop));
-
 	// Implement TCP source application
 	// OnOffHelper onoff("ns3::TcpSocketFactory", sinkAddress);
 	// onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
@@ -179,6 +175,9 @@ main(int argc, char *argv[]) {
 	app->SetStartTime(Seconds(1.));
 	app->SetStopTime(Seconds(20.));
 	// nodes.Get(0)->GetApplication(0)->GetObject<OnOffApplication>()->SetSocket(ns3TcpSocket);
+	
+	// Connect RxDrop trace source and sink
+	devices.Get(1)->TraceConnectWithoutContext("PhyRxDrop", MakeCallback(&RxDrop));
 
 	Simulator::Stop(Seconds(20));
 	Simulator::Run();
