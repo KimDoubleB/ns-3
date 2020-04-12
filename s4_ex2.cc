@@ -4,6 +4,7 @@
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
 #include "ns3/applications-module.h"
+#include "myapp.h"
 
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("s4_ex2");
@@ -19,7 +20,7 @@ CwndChange(uint32_t oldCwnd, uint32_t newCwnd)
 static void
 RxDrop(Ptr<const Packet> p)
 {
-    NS_LOG_UNCOND("RxDrop at" << Simluator::Now().GetSeconds());
+    NS_LOG_UNCOND("RxDrop at" << Simulator::Now().GetSeconds());
 }
 
 int
@@ -53,26 +54,32 @@ main(int argc, char *argv[]){
     PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), sinkPort));
     ApplicationContainer sinkApp = packetSinkHelper.Install(nodes.Get(1));
     sinkApp.Start(Seconds(0.));
-    sinkApp.Stop(Seconds(10.));
+    sinkApp.Stop(Seconds(20.));
 
     // Connect RxDrop trace source and sink
     devices.Get(1)->TraceConnectWithoutContext("phyRxDrop", MakeCallback(&RxDrop));
 
     // Implement TCP source application
-    OnOffHelper onoff("ns3::TcpSocketFactory", sinkAddress);
-    onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
-    onoff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
-    onoff.SetAttribute("DataRate", DataRateValue(1000000));
-    ApplicationContainer sourceApp = onoff.Install(nodes.Get(0));
-    sourceApp.Start(Seconds(1.));
-    sourceApp.Stop(Seconds(10.));
+    // OnOffHelper onoff("ns3::TcpSocketFactory", sinkAddress);
+    // onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+    // onoff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+    // onoff.SetAttribute("DataRate", DataRateValue(1000000));
+    // ApplicationContainer sourceApp = onoff.Install(nodes.Get(0));
+    // sourceApp.Start(Seconds(1.));
+    // sourceApp.Stop(Seconds(10.));
 
-    Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodees.Get(0), TcpSocketFactory::GetTypeId());
+    Ptr<Socket> ns3TcpSocket = Socket::CreateSocket(nodes.Get(0), TcpSocketFactory::GetTypeId());
     // Connect CwndChange trace source and sink
     ns3TcpSocket->TraceConnectWithoutContext("CongestionWindow", MakeCallback(&CwndChange));
-    nodes.Get(0)->GetApplication(0)->GetObject<OnOffApplication>()->SetSocket(ns3TcpSocket);
+    
+    Ptr<MyApp> app = CreateObject<MyApp> ();
+    app->Setup (ns3TcpSocket, sinkAddress, 1040, 1000, DataRate ("1Mbps"));
+    nodes.Get (0)->AddApplication (app);
+    app->SetStartTime (Seconds (1.));
+    app->SetStopTime (Seconds (20.));
+    // nodes.Get(0)->GetApplication(0)->GetObject<OnOffApplication>()->SetSocket(ns3TcpSocket);
 
-    Simulator::Stop(Seconds(10));
+    Simulator::Stop(Seconds(20));
     Simulator::Run();
     Simulator::Destroy();
     return 0;
