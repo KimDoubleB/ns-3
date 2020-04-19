@@ -10,8 +10,8 @@ NS_LOG_COMPONENT_DEFINE("S3_INCLASS_EXERCISE");
 
 int main(int argc, char* argv[]){
 
-    LogComponentEnable ("UdpClient", LOG_LEVEL_INFO);
-    LogComponentEnable ("UdpServer", LOG_LEVEL_INFO);
+    LogComponentEnable ("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable ("UdpEchoServerApplication", LOG_LEVEL_INFO);
 
     /* Create a node container */
     NodeContainer nodes;
@@ -67,12 +67,12 @@ int main(int argc, char* argv[]){
     Time packetInterval = Seconds(0.01);
     uint32_t PacketSize = 100;
     echoClient.SetAttribute("MaxPackets", UintegerValue (maxPacketCount));
-    echoClient.SetAttribute("Interval", packetInterval);
+    echoClient.SetAttribute("Interval", TimeValue(packetInterval));
     echoClient.SetAttribute("PacketSize", UintegerValue(PacketSize));
     ApplicationContainer clientApps = echoClient.Install(nodes.Get(0));
 
     /* Todo 8:  Start the client application from 1 to 10 sec */
-    ClientApps.Start(Seconds(1));
+    clientApps.Start(Seconds(1));
     clientApps.Stop(Seconds(10));
 
     /* Todo 9:  Enable pcap tracing */
