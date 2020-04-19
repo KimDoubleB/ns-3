@@ -55,9 +55,9 @@ main(int argc, char* argv[]){
 
     // csma link
     CsmaHelper csma;
-    csma.SetDeviceAttribute("DataRate", StringValue("100Mbps"));
+    csma.SetChannelAttribute("DataRate", StringValue("100Mbps"));
     csma.SetChannelAttribute("Delay", TimeValue(NanoSeconds(6560)));
-    SimpleNetDeviceHelper csmaDevices;
+    NetDeviceContainer csmaDevices;
     csmaDevices = csma.Install(csmaNodes);
 
     // Install internet stack and assign IP address
@@ -72,7 +72,7 @@ main(int argc, char* argv[]){
     p2pInterfaces = address.Assign(p2pDevices);
 
     // set csma IP address
-    address.SetBase("10.1.1.0", "255.255.255.0");
+    address.SetBase("10.1.2.0", "255.255.255.0");
     Ipv4InterfaceContainer csmaInterfaces;
     csmaInterfaces = address.Assign(csmaDevices);
 
@@ -90,7 +90,7 @@ main(int argc, char* argv[]){
     echoClient.SetAttribute("Interval", TimeValue(Seconds(1.)));
     echoClient.SetAttribute("PacketSize", UintegerValue(1024));
 
-    ApplicationContainer clientApps = echoClient.Install(p2pNodes(0));
+    ApplicationContainer clientApps = echoClient.Install(p2pNodes.Get(0));
     clientApps.Start(Seconds(2.0));
     clientApps.Stop(Seconds(10.0));
 
