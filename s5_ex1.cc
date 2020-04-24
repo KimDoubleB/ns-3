@@ -6,6 +6,25 @@
 #include "ns3/applications-module.h"
 #include "ns3/ipv4-global-routing-helper.h"
 
+
+/*
+CSMA model in ns-3
+- Model a simple bus network in the spirit of Ethernet
+- CsmaChannel
+    - DataRate, Delay
+    - IDLE -> TRANSMITTING -> PROPAGATING -> IDLE
+- CsmaNetDevice
+    - Address, Mtu, SendEnable, ReceiveEnable, ReceiveErrorModel, TxQueue
+- CsmaHelper
+
+n1  n2  n3
+|   |   |
+=========
+CsmaChannel
+
+*/
+
+// Bus topology example
 // Default Network Topology
 //
 //       10.1.1.0
